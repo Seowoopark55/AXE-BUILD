@@ -182,9 +182,6 @@ function normalizeBuildTagSelection(value) {
   )].slice(0, 8);
 }
 
-// HUB는 별도 도메인이므로 인증 세션 자동 공유를 가정하지 않습니다.
-const HUB_HOME_URL = String(import.meta.env.VITE_LAC_HUB_URL || "https://lac-hub.vercel.app").trim();
-
 const TAB_ROUTES = {
   home: "/",
   builds: "/builds",
@@ -1219,7 +1216,7 @@ function FloatingContextPanel({
 
   const contextMap = {
     home: {
-      kicker: "LAC HUB",
+      kicker: "LAC BUILD",
       title: "빌드 공유 시스템",
       body: "공지, 추천세팅, 개조서·무기 정보와 제보 기능을 한 곳에서 이용할 수 있습니다."
     },
@@ -1263,16 +1260,7 @@ function FloatingContextPanel({
   const current = contextMap[tab] || contextMap.builds;
 
   return (
-    <aside className="floating-context-v116" aria-label="LAC BUILD 빠른 메뉴 및 HUB 이동">
-      <div className="floating-context-v116__hub">
-        <div className="floating-context-v116__hub-copy">
-          <span>LAC HUB</span>
-          <strong>다른 콘텐츠도 살펴보기</strong>
-          <p>회사 관리와 게임 정보는 HUB에서 이용할 수 있습니다.</p>
-        </div>
-        <a className="floating-context-v116__hub-link" href={HUB_HOME_URL} rel="noopener noreferrer">HUB 메인으로 <span aria-hidden="true">↗</span></a>
-      </div>
-
+    <aside className="floating-context-v116" aria-label="LAC BUILD 빠른 메뉴">
       <div className="floating-context-v116__menu">
         {quickItems.map((item) => (
           <button
