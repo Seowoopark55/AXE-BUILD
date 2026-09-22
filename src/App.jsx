@@ -182,6 +182,9 @@ function normalizeBuildTagSelection(value) {
   )].slice(0, 8);
 }
 
+// HUB는 별도 도메인이므로 인증 세션 자동 공유를 가정하지 않습니다.
+const HUB_HOME_URL = String(import.meta.env.VITE_LAC_HUB_URL || "https://lac-hub.vercel.app").trim();
+
 const TAB_ROUTES = {
   home: "/",
   builds: "/builds",
@@ -194,14 +197,14 @@ const TAB_ROUTES = {
 };
 
 const PAGE_TITLES = {
-  home: "AXE BUILD · HOME",
-  builds: "추천세팅 · AXE BUILD",
-  notices: "공지 · AXE BUILD",
-  presets: "내 프리셋 · AXE BUILD",
-  modbooks: "개조서 · AXE BUILD",
-  weapons: "무기 · AXE BUILD",
-  reports: "제보 · AXE BUILD",
-  admin: "관리 · AXE BUILD"
+  home: "LAC BUILD · HOME",
+  builds: "추천세팅 · LAC BUILD",
+  notices: "공지 · LAC BUILD",
+  presets: "내 프리셋 · LAC BUILD",
+  modbooks: "개조서 · LAC BUILD",
+  weapons: "무기 · LAC BUILD",
+  reports: "제보 · LAC BUILD",
+  admin: "관리 · LAC BUILD"
 };
 
 function tabFromLocation() {
@@ -746,7 +749,7 @@ function Modal({ title, children, onClose, wide = false, bare = false, className
         {!bare && (
           <header className="modal-head">
             <div>
-              <div className="eyebrow">AXE HUB</div>
+              <div className="eyebrow">LAC HUB</div>
               <h2>{title}</h2>
             </div>
             <button className="icon-btn" onClick={onClose} aria-label="닫기">
@@ -764,11 +767,11 @@ function Brand() {
   return (
     <div className="brand brand-v114">
       <div className="brand-mark brand-logo-box">
-        <img src="/assets/axe-logo.png" alt="AXE 로고" />
+        <img src="/assets/lac-hub-mark.png" alt="LAC HUB 로고" />
       </div>
       <div className="brand-v114__copy">
-        <strong>BUILD</strong>
-        <span>PUBLIC BUILD LAB</span>
+        <strong>LAC BUILD</strong>
+        <span>RECOMMENDED BUILDS &amp; MODBOOKS</span>
       </div>
     </div>
   );
@@ -789,7 +792,7 @@ function Header({
   return (
     <header className="topbar">
       <div className="shell topbar-inner">
-        <button className="brand-btn" onClick={() => setTab("home")} aria-label="AXE BUILD 홈">
+        <button className="brand-btn" onClick={() => setTab("home")} aria-label="LAC BUILD 홈">
           <Brand />
         </button>
         <nav className="nav">
@@ -830,7 +833,7 @@ function Hero({ onJump, user, onCreate, onProfile, onLogin }) {
   return (
     <section className="hero shell hero-simple">
       <div className="hero-copy">
-        <div className="eyebrow gold">AXE BUILD · PUBLIC SETTING HUB</div>
+        <div className="eyebrow gold">LAC BUILD · PUBLIC SETTING HUB</div>
         <h1>추천세팅을<br />가장 빠르게 찾는 곳.</h1>
         <p>
           장비 슬롯과 개조서 옵션을 한눈에 비교하고, 이용자들이 직접 공유한 다양한 세팅을 확인해보세요.
@@ -1116,7 +1119,7 @@ function NoticesPage({
     <section className="shell section notices-page-v113">
       <div className="section-head">
         <div>
-          <div className="eyebrow">AXE HUB NOTICE</div>
+          <div className="eyebrow">LAC HUB NOTICE</div>
           <h2>공지사항</h2>
           <p>변경사항, 이용 안내, 데이터 업데이트 소식을 확인할 수 있습니다.</p>
         </div>
@@ -1196,49 +1199,6 @@ function NoticesPage({
   );
 }
 
-function FloatingRemote({ announcements, onHome, onNotice, onReport, onPreset }) {
-  const contact = String(import.meta.env.VITE_AXE_CONTACT_URL || "").trim();
-
-  const recruitHeader = (
-    <div className="remote-recruit-head">
-      <span>AXE RECRUIT</span>
-      <strong>AXE 인원모집 중</strong>
-      <small>DM 문의 주세요.</small>
-    </div>
-  );
-
-  return (
-    <aside className="floating-remote-v112" aria-label="AXE HUB 빠른 메뉴">
-      {contact ? (
-        <a className="remote-recruit-link" href={contact} target="_blank" rel="noreferrer">
-          {recruitHeader}
-        </a>
-      ) : recruitHeader}
-
-      <div className="remote-menu-v112">
-        <button onClick={onHome}>
-          <span className="remote-icon">⌂</span>
-          <b>홈</b>
-        </button>
-        <button onClick={onNotice}>
-          <span className="remote-icon">!</span>
-          <b>공지</b>
-          {announcements.length > 0 && <span className="remote-dot">{Math.min(announcements.length, 9)}</span>}
-        </button>
-        <button onClick={onReport}>
-          <span className="remote-icon">✎</span>
-          <b>제보</b>
-        </button>
-        <button onClick={onPreset}>
-          <span className="remote-icon">★</span>
-          <b>내 프리셋</b>
-        </button>
-      </div>
-    </aside>
-  );
-}
-
-
 function FloatingContextPanel({
   tab,
   announcements,
@@ -1246,8 +1206,7 @@ function FloatingContextPanel({
   onHome,
   onNotice,
   onReport,
-  onPreset,
-  onRecruit
+  onPreset
 }) {
   const noticeCount = announcements?.length || 0;
 
@@ -1260,7 +1219,7 @@ function FloatingContextPanel({
 
   const contextMap = {
     home: {
-      kicker: "AXE HUB",
+      kicker: "LAC HUB",
       title: "빌드 공유 시스템",
       body: "공지, 추천세팅, 개조서·무기 정보와 제보 기능을 한 곳에서 이용할 수 있습니다."
     },
@@ -1272,7 +1231,7 @@ function FloatingContextPanel({
     notices: {
       kicker: "NOTICE CHANNEL",
       title: "공지사항",
-      body: "AXE BUILD의 업데이트, 이용 안내와 데이터 변경사항을 확인하는 공간입니다."
+      body: "LAC BUILD의 업데이트, 이용 안내와 데이터 변경사항을 확인하는 공간입니다."
     },
     reports: {
       kicker: "REPORT DESK",
@@ -1304,16 +1263,14 @@ function FloatingContextPanel({
   const current = contextMap[tab] || contextMap.builds;
 
   return (
-    <aside className="floating-context-v116" aria-label="AXE HUB 빠른 메뉴와 모집 안내">
-      <div className="floating-context-v116__recruit">
-        <div className="floating-context-v116__recruit-copy">
-          <span>AXE RECRUIT</span>
-          <strong>AXE 인원모집 중</strong>
-          <p>DM 문의 주세요.</p>
+    <aside className="floating-context-v116" aria-label="LAC BUILD 빠른 메뉴 및 HUB 이동">
+      <div className="floating-context-v116__hub">
+        <div className="floating-context-v116__hub-copy">
+          <span>LAC HUB</span>
+          <strong>다른 콘텐츠도 살펴보기</strong>
+          <p>회사 관리와 게임 정보는 HUB에서 이용할 수 있습니다.</p>
         </div>
-        <button className="floating-context-v116__recruit-btn" type="button" onClick={onRecruit}>
-          모집안내
-        </button>
+        <a className="floating-context-v116__hub-link" href={HUB_HOME_URL} rel="noopener noreferrer">HUB 메인으로 <span aria-hidden="true">↗</span></a>
       </div>
 
       <div className="floating-context-v116__menu">
@@ -1337,32 +1294,6 @@ function FloatingContextPanel({
         <p>{current.body}</p>
       </div>
     </aside>
-  );
-}
-
-function RecruitPosterModal({ onClose }) {
-  return (
-    <Modal
-      title="AXE 신규 인원 모집"
-      onClose={onClose}
-      bare
-      className="recruit-poster-modal-v118"
-    >
-      <div className="recruit-poster-only-v118">
-        <button
-          className="recruit-poster-close-v118"
-          type="button"
-          onClick={onClose}
-          aria-label="모집 안내 닫기"
-        >
-          ×
-        </button>
-        <img
-          src="/assets/axe-recruitment-poster.png"
-          alt="AXE 신규 인원 모집 포스터"
-        />
-      </div>
-    </Modal>
   );
 }
 
@@ -1398,7 +1329,7 @@ function LoginPrivacyModal({ onClose, onContinue }) {
         <div className="login-privacy-v116__lead">
           <span>MINIMUM ACCESS</span>
           <strong>로그인에 필요한 최소 권한만 요청합니다.</strong>
-          <p>AXE BUILD는 Discord 계정을 사용자 식별 용도로만 사용합니다.</p>
+          <p>LAC BUILD는 Discord 계정을 사용자 식별 용도로만 사용합니다.</p>
         </div>
 
         <div className="login-privacy-v116__grid">
@@ -1426,7 +1357,7 @@ function LoginPrivacyModal({ onClose, onContinue }) {
 
         <div className="login-privacy-v116__note">
           <span>보안 안내</span>
-          <p>AXE BUILD는 프로그램 설치나 실행 파일 다운로드를 요구하지 않습니다.</p>
+          <p>LAC BUILD는 프로그램 설치나 실행 파일 다운로드를 요구하지 않습니다.</p>
         </div>
       </div>
 
@@ -1553,7 +1484,7 @@ function ProfileModal({
 
           <label className="nickname-input">
             <span>신청할 회사명</span>
-            <input value={company} maxLength={24} onChange={(e) => setCompany(e.target.value)} placeholder="2~24자 · 예: AXE" />
+            <input value={company} maxLength={24} onChange={(e) => setCompany(e.target.value)} placeholder="2~24자 · 예: 회사명" />
           </label>
           <div className="modal-actions inline-actions">
             <button className="btn primary" onClick={submitCompany} disabled={companySaving}>
@@ -1765,7 +1696,7 @@ function WeaponsPage({ modbooks }) {
           <div className="weapon-source-note-v128">
             <span>DATA SOURCE</span>
             <p>
-              이 페이지의 무기군 연결은 AXE BUILD 개조서 DB의 분류·이름을 기준으로 자동 구성됩니다.
+              이 페이지의 무기군 연결은 LAC BUILD 개조서 DB의 분류·이름을 기준으로 자동 구성됩니다.
               개조서 정보가 추가되면 무기 페이지에도 자동 반영됩니다.
             </p>
           </div>
@@ -1835,7 +1766,7 @@ function ReportsPage({ user, myReports, onNewReport, onLogin }) {
   return (
     <section className="shell section reports-page">
       <div className="report-hero">
-        <div><div className="eyebrow gold">HELP AXE BUILD</div><h2>새 개조서를 발견했거나<br />옵션이 잘못되어 있나요?</h2><p>제보 하나가 전체 추천세팅의 정확도를 올립니다. 스크린샷이 있으면 같이 첨부해주세요.</p></div>
+        <div><div className="eyebrow gold">HELP LAC BUILD</div><h2>새 개조서를 발견했거나<br />옵션이 잘못되어 있나요?</h2><p>제보 하나가 전체 추천세팅의 정확도를 올립니다. 스크린샷이 있으면 같이 첨부해주세요.</p></div>
         {user ? <button className="btn primary report-cta" onClick={onNewReport}>+ 지금 제보하기</button> : <button className="btn discord report-cta" onClick={onLogin}>로그인하고 제보하기</button>}
       </div>
       <div className="report-guide">
@@ -2177,7 +2108,7 @@ function AdminPage({
   };
   return (
     <section className="shell section admin-page">
-      <div className="section-head"><div><div className="eyebrow">AXE HUB ADMIN</div><h2>관리 센터</h2><p>개조서 DB, 제보 검수, 닉네임·회사명 승인, 공지사항을 한 곳에서 관리합니다.</p></div></div>
+      <div className="section-head"><div><div className="eyebrow">LAC HUB ADMIN</div><h2>관리 센터</h2><p>개조서 DB, 제보 검수, 닉네임·회사명 승인, 공지사항을 한 곳에서 관리합니다.</p></div></div>
       <div className="admin-tabs">
         <button className={cls(mode === "modbooks" && "active")} onClick={() => setMode("modbooks")}>개조서 관리 <span>{modbooks.length}</span></button>
         <button className={cls(mode === "reports" && "active")} onClick={() => setMode("reports")}>개조서 제보 <span>{pending.length}</span></button>
@@ -2439,7 +2370,7 @@ function BuildDetail({
               <h2>{build.title}</h2>
               <div className="build-author-detail-v115">
                 <span>BUILDER</span>
-                <strong>{build.author_name || "AXE"}</strong>
+                <strong>{build.author_name || "익명"}</strong>
                 {build.author_company && <em>{build.author_company}</em>}
               </div>
               <div className="ops-info-preset-article__meta">
@@ -2497,7 +2428,7 @@ function BuildDetail({
             <div className="ops-info-preset-inventory ops-info-preset-inventory--article">
               <div className="ops-info-preset-inventory__bar ops-info-preset-inventory__bar--compact">
                 <span>장비 <b>1</b></span>
-                <em>AXE BUILD</em>
+                <em>LAC BUILD</em>
               </div>
 
               <div
@@ -3622,7 +3553,6 @@ export default function App() {
   const [editor, setEditor] = useState(null);
   const [reportEditor, setReportEditor] = useState(false);
   const [profileModal, setProfileModal] = useState(false);
-  const [recruitModal, setRecruitModal] = useState(false);
   const [loginPrivacyModal, setLoginPrivacyModal] = useState(false);
   const [shareLoginModal, setShareLoginModal] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState(() => categoryFromLocation());
@@ -4088,7 +4018,7 @@ export default function App() {
         <Brand />
         <div className="config-card">
           <div className="eyebrow gold">SETUP REQUIRED</div>
-          <h1>AXE HUB 연결 정보가 필요합니다.</h1>
+          <h1>LAC HUB 연결 정보가 필요합니다.</h1>
           <p>프로젝트 루트에 <code>.env.local</code> 파일을 만들고 아래 두 값을 입력하세요.</p>
           <pre>{`VITE_SUPABASE_URL=https://...supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...`}</pre>
@@ -4269,7 +4199,6 @@ VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...`}</pre>
         />
       )}
 
-      {recruitModal && <RecruitPosterModal onClose={() => setRecruitModal(false)} />}
       <FloatingContextPanel
         tab={tab}
         announcements={announcements}
@@ -4281,7 +4210,6 @@ VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...`}</pre>
         onNotice={() => navigateTab("notices")}
         onReport={() => navigateTab("reports")}
         onPreset={() => user ? navigateTab("presets") : login()}
-        onRecruit={() => setRecruitModal(true)}
       />
 
       <Toast message={toast.message} tone={toast.tone} />
